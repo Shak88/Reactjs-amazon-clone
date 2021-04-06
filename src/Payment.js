@@ -16,7 +16,7 @@ function Payment() {
   const [disabled, setDisabled] = useState(true);
   const [succeeded, setSucceeded] = useState(false);
   const [processing, setProcessing] = useState("");
-  const [clientSecret, setClientSecret] = useState();
+  const [clientSecret, setClientSecret] = useState(true);
   const stripe = useStripe();
   const elements = useElements();
   const history = useHistory();
@@ -29,11 +29,12 @@ function Payment() {
         //Stripe expects the total in a currency subunits
         url: `/payments/create?total=${getBasketTotal(basket) * 100}`,
       });
+      console.log("response");
       setClientSecret(response.data.clientSecret);
     };
     getClientSecret();
   }, [basket]);
-
+  console.log("THE SECRET IS >>>", clientSecret);
   const handleSubmit = async (e) => {
     // do all the fancy stripe stuff
     e.preventDefault();
@@ -52,6 +53,9 @@ function Payment() {
         setError(null);
         setProcessing(false);
 
+        dispatch({
+          type: "EMPTY_BASKET",
+        });
         history.replace("/orders");
       });
   };
